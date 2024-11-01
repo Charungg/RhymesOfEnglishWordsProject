@@ -8,9 +8,9 @@ import java.util.Set;
 
 public class Word implements IWord {
 
-    String word;
+    private String word;
 
-    Set<IPronunciation> setOfPronunciation = new HashSet<>();
+    private Set<IPronunciation> setOfPronunciation = new HashSet<>();
 
 
     public Word(String word){
