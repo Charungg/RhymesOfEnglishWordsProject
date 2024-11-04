@@ -15,7 +15,7 @@ public class Phoneme implements IPhoneme{
     private Arpabet phoneme;
     private int stress;
 
-    public Phoneme(Arpabet phoneme, int stress) throws IllegalArgumentException{
+    public Phoneme(Arpabet phoneme, int stress){
         this.phoneme = phoneme;
         this.stress = stress;
 

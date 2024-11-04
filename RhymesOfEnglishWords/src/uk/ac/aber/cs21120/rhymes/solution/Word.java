@@ -24,7 +24,7 @@ public class Word implements IWord {
     @Override
     public void addPronunciation(IPronunciation pronunciation) {
         if (pronunciation == null){
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Argument Passed Cannot Be Null");
         }
 
         setOfPronunciation.add(pronunciation);
