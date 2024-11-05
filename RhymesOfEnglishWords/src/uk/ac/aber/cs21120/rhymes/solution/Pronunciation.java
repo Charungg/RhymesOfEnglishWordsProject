@@ -57,7 +57,7 @@ public class Pronunciation implements IPronunciation {
 
             // Each Phoneme Will Correspond To Their Stress Value.
             else{
-                StressedVowelIndex.put(index,selectedPhonemeStressValue);
+                StressedVowelIndex.putIfAbsent(index,selectedPhonemeStressValue);
             }
         }
 
@@ -90,7 +90,21 @@ public class Pronunciation implements IPronunciation {
     @Override
     public boolean rhymesWith(IPronunciation other) {
         IPhoneme selectedPhoneme = listOfPhoneme.get(findFinalStressedVowelIndex());
-        IPhoneme otherSelectedPhoneme = listOfPhoneme.get(other.findFinalStressedVowelIndex());
+        IPhoneme otherSelectedPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
+
+        System.out.println("---------------------------------------------------------------------------------");
+        for (IPhoneme i : listOfPhoneme){
+            System.out.print(i.getArpabet());
+
+        }
+
+        System.out.println(",,,,,,");
+
+        for (IPhoneme i : other.getPhonemes()){
+            System.out.print(i.getArpabet());
+        }
+        System.out.println("---------------------------------------------------------------------------------");
+
         return (selectedPhoneme.hasSameArpabet(otherSelectedPhoneme));
     }
 
