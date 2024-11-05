@@ -16,7 +16,7 @@ public class DictionaryTests {
 
     // The location of the CMU dictionary file
     // CHANGE THIS TO THE LOCATION OF YOUR DICTIONARY FILE
-    public static final String CMU_DICT = "C:/Users/charl/Downloads/RyhmesOfEnglishWordsProject/RhymesOfEnglishWords/cmudict.dict.txt";
+    public static final String CMU_DICT = "cmudict.dict.txt";
 
     /**
      * Helper method to get all pronunciations of a word as a list of strings sorted

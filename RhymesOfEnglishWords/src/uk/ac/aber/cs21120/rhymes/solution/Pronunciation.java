@@ -89,7 +89,9 @@ public class Pronunciation implements IPronunciation {
 
     @Override
     public boolean rhymesWith(IPronunciation other) {
-        return false;
+        IPhoneme selectedPhoneme = listOfPhoneme.get(findFinalStressedVowelIndex());
+        IPhoneme otherSelectedPhoneme = listOfPhoneme.get(other.findFinalStressedVowelIndex());
+        return (selectedPhoneme.hasSameArpabet(otherSelectedPhoneme));
     }
 
     public boolean isPhonemeAVowel(IPhoneme phoneme){

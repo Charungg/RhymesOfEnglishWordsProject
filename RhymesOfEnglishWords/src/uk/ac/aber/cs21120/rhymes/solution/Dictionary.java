@@ -215,6 +215,8 @@ public class Dictionary implements IDictionary {
 
     @Override
     public Set<String> getRhymes(String word) {
+        Set<String> rhymes = new HashSet<>();
+
         return null;
     }
 }
