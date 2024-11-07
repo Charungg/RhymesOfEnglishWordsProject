@@ -215,8 +215,37 @@ public class Dictionary implements IDictionary {
 
     @Override
     public Set<String> getRhymes(String word) {
-        Set<String> rhymes = new HashSet<>();
+        IWord wordObject = dictionary.get(word);
+        Set<IPronunciation> setOfPronunciation = wordObject.getPronunciations();
+
+        LinkedList rhymes = new LinkedList();
+        rhymes.add(word);
+
+        for (String otherWord : dictionary.keySet()){
+            for (IPronunciation pronunciation : setOfPronunciation){
+                for (IPronunciation otherPronunciation : dictionary.get(otherWord).getPronunciations()){
+                    if (pronunciation.rhymesWith(otherPronunciation)){
+                        rhymes.add(otherWord);
+                    }
+                }
+            }
+        }
+
+        System.out.println("Original Word = " + word);
+//        for (String text : rhymes){
+//            System.out.println(text);
+//        }
+        for (int i = 0; i < rhymes.size() ; i++){
+            System.out.println(rhymes.get(i));
+        }
 
         return null;
     }
+
+    // Orange A01 R AH0 N JH
+    // Orange (2) A01 R IH0 N JH
+    // Borski B A01 R S K IY0
+
+    // romantic R OW0 M AE1 N T IH0 K
+    // sycophantic S IH2 K AH0 F AE1 N T IH0 K
 }

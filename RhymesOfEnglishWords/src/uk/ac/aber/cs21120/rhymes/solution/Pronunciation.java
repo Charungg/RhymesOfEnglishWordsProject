@@ -8,15 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-// To Do:
-// If You Have Time Use Just Array And See If It's Nicer.
-
 public class Pronunciation implements IPronunciation {
 
     private List<IPhoneme> listOfPhoneme = new LinkedList<>();
-
-    // This Will Hold The
-    private Map<Integer, Integer> StressedVowelIndex = new HashMap<>();
 
     @Override
     public void add(IPhoneme phoneme) {
@@ -27,91 +21,106 @@ public class Pronunciation implements IPronunciation {
         listOfPhoneme.add(phoneme);
     }
 
+
     @Override
     public List<IPhoneme> getPhonemes() {
         return listOfPhoneme;
     }
 
+
     @Override
     public int findFinalStressedVowelIndex() {
-        IPhoneme selectedPhoneme;
-        int selectedPhonemeStressValue;
+        IPhoneme phoneme;
+        int stressValue;
+        // If No Vowels Are Found -1 Will Be Returned.
+        int finalStressedVowelIndex = -1;
 
-        // This Iterates Through The List Of Phoneme But Backwards.
-        for (int index = listOfPhoneme.size() - 1; index>=0; index--){
-
-            selectedPhoneme = listOfPhoneme.get(index);
-            selectedPhonemeStressValue = selectedPhoneme.getStress();
-
-            // This Checks Whether Phoneme Is A Vowel And If
-            // Not Then Put -1 Corresponding To That Index.
-            if (!isPhonemeAVowel(selectedPhoneme)){
-                StressedVowelIndex.put(index,-1);
+        for (int index = listOfPhoneme.size() - 1; index >= 0; index--){
+            phoneme = listOfPhoneme.get(index);
+            stressValue = phoneme.getStress();
+            
+            if (finalStressedVowelIndex == -1 && isPhonemeAVowel(phoneme)){
+                finalStressedVowelIndex = index;
             }
 
-            // If The Primary Stress Is Found Early Then Return Index Position.
-            // This Helps With Efficiency Since It Won't Go Through All The List.
-            else if(selectedPhonemeStressValue == 1){
+            else if (stressValue == 1){
                 return index;
             }
 
-            // Each Phoneme Will Correspond To Their Stress Value.
-            else{
-                StressedVowelIndex.putIfAbsent(index,selectedPhonemeStressValue);
+            else if (isPhonemeAVowel(phoneme)){
+                finalStressedVowelIndex = findHighestStressedValueIndex(finalStressedVowelIndex,index);
             }
         }
 
-        // Once The Sequence Of Phoneme Highest Stress Value
-        // Is Constructed Then The Next Highest Stress Value.
-        return getNextHighestStressValue();
-    }
-
-    private int getNextHighestStressValue(){
-        //
-        if(StressedVowelIndex.containsValue(2)){
-            for (int key : StressedVowelIndex.keySet()){
-                if (StressedVowelIndex.get(key) == 2){
-                    return key;
-                }
-            }
-        }
-
-        else if(StressedVowelIndex.containsValue(0)){
-            for (int key : StressedVowelIndex.keySet()){
-                if (StressedVowelIndex.get(key) == 0){
-                    return key;
-                }
-            }
-        }
-
-        return -1;
-    }
-
-    @Override
-    public boolean rhymesWith(IPronunciation other) {
-        IPhoneme selectedPhoneme = listOfPhoneme.get(findFinalStressedVowelIndex());
-        IPhoneme otherSelectedPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
-
-        System.out.println("---------------------------------------------------------------------------------");
-        for (IPhoneme i : listOfPhoneme){
-            System.out.print(i.getArpabet());
-
-        }
-
-        System.out.println(",,,,,,");
-
-        for (IPhoneme i : other.getPhonemes()){
-            System.out.print(i.getArpabet());
-        }
-        System.out.println("---------------------------------------------------------------------------------");
-
-        return (selectedPhoneme.hasSameArpabet(otherSelectedPhoneme));
+        return finalStressedVowelIndex;
     }
 
     public boolean isPhonemeAVowel(IPhoneme phoneme){
         return ((phoneme.getArpabet()).isVowel());
     }
 
+    public int findHighestStressedValueIndex(int finalIndex, int index){
+       int finalStressValue = listOfPhoneme.get(finalIndex).getStress();
+       int stressValue = listOfPhoneme.get(index).getStress();
+
+       if(stressValue > finalStressValue || stressValue == 1){
+          return index;
+       }
+
+       return finalIndex;
+    }
 
 
+
+    @Override
+    public boolean rhymesWith(IPronunciation other) {
+        int indexFinalStressedVowel = findFinalStressedVowelIndex();
+        int otherIndexFinalStressedVowel = other.findFinalStressedVowelIndex();
+
+        // Returns False If There is No Vowels Found.
+        // Also returns False If Pronunciation Is Length Zero Because No Vowels Can Be Found In It.
+        if (indexFinalStressedVowel == -1 || otherIndexFinalStressedVowel == -1){
+            return false;
+        }
+
+        IPhoneme phoneme = listOfPhoneme.get(indexFinalStressedVowel);
+        IPhoneme otherPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
+
+
+        // Checks If The Araphabet Is The Same And If The Constant Are The Same If There Is Any.
+        return (phoneme.hasSameArpabet(otherPhoneme) && isSameConstant(indexFinalStressedVowel,otherIndexFinalStressedVowel,listOfPhoneme,other.getPhonemes()));
+    }
+
+
+    public boolean isSameConstant(int index, int otherIndex, List<IPhoneme> phoneme, List<IPhoneme> otherPhoneme){
+        int phonemeFinalIndex = phoneme.size() - 1;
+        int otherPhonemeFinalIndex = otherPhoneme.size() - 1;
+        boolean isSameConstant = true;
+
+        // If There Is Nothing After The Final Stressed Vowel.
+        if((index == phonemeFinalIndex && otherPhonemeFinalIndex == phonemeFinalIndex)){
+            return true;
+        }
+
+        int gap = phonemeFinalIndex - index;
+        int gap2 = otherPhonemeFinalIndex - otherIndex;
+
+        if (gap>gap2){
+            for (int i = 0; i<gap2 ; i++){
+                if (!(phoneme.get(index + i).hasSameArpabet(otherPhoneme.get(otherIndex + 1)))){
+                    return false;
+                }
+            }
+        }
+
+        else{
+            for (int i = 0; i<gap; i++){
+                if (!(phoneme.get(index + i).hasSameArpabet(otherPhoneme.get(otherIndex + 1)))){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
