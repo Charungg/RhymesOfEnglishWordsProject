@@ -38,7 +38,7 @@ public class Pronunciation implements IPronunciation {
         for (int index = listOfPhoneme.size() - 1; index >= 0; index--){
             phoneme = listOfPhoneme.get(index);
             stressValue = phoneme.getStress();
-            
+
             if (finalStressedVowelIndex == -1 && isPhonemeAVowel(phoneme)){
                 finalStressedVowelIndex = index;
             }
@@ -74,6 +74,9 @@ public class Pronunciation implements IPronunciation {
 
     @Override
     public boolean rhymesWith(IPronunciation other) {
+        IPhoneme phoneme;
+        IPhoneme otherPhoneme;
+
         int indexFinalStressedVowel = findFinalStressedVowelIndex();
         int otherIndexFinalStressedVowel = other.findFinalStressedVowelIndex();
 
@@ -83,41 +86,27 @@ public class Pronunciation implements IPronunciation {
             return false;
         }
 
-        IPhoneme phoneme = listOfPhoneme.get(indexFinalStressedVowel);
-        IPhoneme otherPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
+        // Gets Arphabet Of Both Phoneme Final Stressed Index;
+        phoneme = listOfPhoneme.get(indexFinalStressedVowel);
+        otherPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
 
 
-        // Checks If The Araphabet Is The Same And If The Constant Are The Same If There Is Any.
-        return (phoneme.hasSameArpabet(otherPhoneme) && isSameConstant(indexFinalStressedVowel,otherIndexFinalStressedVowel,listOfPhoneme,other.getPhonemes()));
+        // Checks If The Araphabet Is The Same And If The Constant Are The Same.
+        return (phoneme.hasSameArpabet(otherPhoneme) && isSameConstant(indexFinalStressedVowel,otherIndexFinalStressedVowel,other.getPhonemes()));
     }
 
 
-    public boolean isSameConstant(int index, int otherIndex, List<IPhoneme> phoneme, List<IPhoneme> otherPhoneme){
-        int phonemeFinalIndex = phoneme.size() - 1;
-        int otherPhonemeFinalIndex = otherPhoneme.size() - 1;
-        boolean isSameConstant = true;
+    public boolean isSameConstant(int finalStressedIndex, int otherFinalStressedIndex, List<IPhoneme> otherListOfPhoneme){
+        int pronunciationConstantSize = listOfPhoneme.size() - finalStressedIndex;
+        int otherPronunciationConstantSize = otherListOfPhoneme.size() - otherFinalStressedIndex;
 
-        // If There Is Nothing After The Final Stressed Vowel.
-        if((index == phonemeFinalIndex && otherPhonemeFinalIndex == phonemeFinalIndex)){
-            return true;
+        if (pronunciationConstantSize != otherPronunciationConstantSize){
+            return false;
         }
 
-        int gap = phonemeFinalIndex - index;
-        int gap2 = otherPhonemeFinalIndex - otherIndex;
-
-        if (gap>gap2){
-            for (int i = 0; i<gap2 ; i++){
-                if (!(phoneme.get(index + i).hasSameArpabet(otherPhoneme.get(otherIndex + 1)))){
-                    return false;
-                }
-            }
-        }
-
-        else{
-            for (int i = 0; i<gap; i++){
-                if (!(phoneme.get(index + i).hasSameArpabet(otherPhoneme.get(otherIndex + 1)))){
-                    return false;
-                }
+        for (int check = 0; check<pronunciationConstantSize; check++){
+            if (!((listOfPhoneme.get(finalStressedIndex + check)).hasSameArpabet((otherListOfPhoneme.get(otherFinalStressedIndex + check))))){
+                return false;
             }
         }
 

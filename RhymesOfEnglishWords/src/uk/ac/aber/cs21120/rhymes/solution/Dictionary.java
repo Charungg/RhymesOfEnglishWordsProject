@@ -2,9 +2,19 @@ package uk.ac.aber.cs21120.rhymes.solution;
 
 import uk.ac.aber.cs21120.rhymes.interfaces.*;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
+import java.util.Map;
+import java.util.HashMap;
+
+import java.util.LinkedList;
+
+import java.util.Set;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // Hashset if looped would return random data throughout the set
 // for example if pronunciation has been added phoneme in the order
@@ -25,11 +35,13 @@ import java.util.*;
 // Therefore the JUnit testing
 public class Dictionary implements IDictionary {
 
-    private HashMap<String,IWord> dictionary = new HashMap<>();
+    private Map<String,IWord> dictionary = new HashMap<>();
+
+    private Set<String> test = new HashSet<>();
 
     @Override
     public IWord getWord(String word) {
-        return (dictionary.get(word));
+        return dictionary.getOrDefault(word,null);
     }
 
     @Override
@@ -62,9 +74,9 @@ public class Dictionary implements IDictionary {
         String linePronunciation;
         int wordPronunciationIndexSplit;
 
-        if (line == null){
-            throw new IllegalArgumentException("Argument Passed Cannot Be Null");
-        }
+//        if (line == null){
+//            throw new IllegalArgumentException("Argument Passed Cannot Be Null");
+//        }
 
         line = removeComment(line);
         line = removeBracket(line);
@@ -203,49 +215,78 @@ public class Dictionary implements IDictionary {
             String line;
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             while ((line = reader.readLine()) != null){
+                regex(line);
                 parseDictionaryLine(line);
             }
         }
 
         catch (IOException e) {
             System.out.println("File Couldn't Be Found");
-            e.printStackTrace();
         }
     }
 
     @Override
     public Set<String> getRhymes(String word) {
-        IWord wordObject = dictionary.get(word);
-        Set<IPronunciation> setOfPronunciation = wordObject.getPronunciations();
+        IWord wordToRhyme = dictionary.get(word);
+        Set<IPronunciation> wordToRhymePronunciationList = wordToRhyme.getPronunciations();
 
-        LinkedList rhymes = new LinkedList();
-        rhymes.add(word);
+        IWord dictionaryWord;
+        Set<IPronunciation> dictionarySetOfPronunciation;
 
-        for (String otherWord : dictionary.keySet()){
-            for (IPronunciation pronunciation : setOfPronunciation){
-                for (IPronunciation otherPronunciation : dictionary.get(otherWord).getPronunciations()){
-                    if (pronunciation.rhymesWith(otherPronunciation)){
-                        rhymes.add(otherWord);
+        Set<String> rhymes = new HashSet<>();
+
+        for (String dictionaryString: dictionary.keySet()){
+//            System.out.println(dictionaryString);
+            dictionaryWord = dictionary.get(dictionaryString);
+            dictionarySetOfPronunciation = dictionaryWord.getPronunciations();
+
+            for (IPronunciation dictionaryPronunciation : dictionarySetOfPronunciation){
+                for (IPronunciation pronunciation : wordToRhymePronunciationList){
+                    if (pronunciation.rhymesWith(dictionaryPronunciation)){
+                        rhymes.add(dictionaryString);
                     }
                 }
             }
         }
 
-        System.out.println("Original Word = " + word);
-//        for (String text : rhymes){
-//            System.out.println(text);
-//        }
-        for (int i = 0; i < rhymes.size() ; i++){
-            System.out.println(rhymes.get(i));
+        if (word.equals("cat")){
+            for (String catRhyme : test){
+                if (!rhymes.contains(catRhyme)){
+                    System.out.println(catRhyme);
+                }
+            }
         }
 
-        return null;
+        return rhymes;
     }
 
-    // Orange A01 R AH0 N JH
-    // Orange (2) A01 R IH0 N JH
-    // Borski B A01 R S K IY0
+    public void regex(String line){
+        boolean matchFound;
+        int indexOfSpace;
+        int indexOfComment;
 
-    // romantic R OW0 M AE1 N T IH0 K
-    // sycophantic S IH2 K AH0 F AE1 N T IH0 K
+        Pattern pattern = Pattern.compile("AE1 T$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(line);
+        matchFound = matcher.find();
+
+        if (matchFound){
+            indexOfSpace = line.indexOf(" ");
+
+            line = setWordFromLine(line,indexOfSpace);
+            line = removeBracket(line);
+            test.add(line);
+        }
+    }
 }
+
+// For cat 10 words should rhyme with but it can't recognise it.
+// at-bat
+// balyeat
+// nonfat
+// gujarat
+// tit-for-tat
+// sarratt
+// rat-a-tat
+// non-fat
+// inmarsat
+// landsat
