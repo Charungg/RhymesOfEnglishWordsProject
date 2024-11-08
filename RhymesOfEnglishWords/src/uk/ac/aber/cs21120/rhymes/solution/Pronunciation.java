@@ -5,9 +5,6 @@ import uk.ac.aber.cs21120.rhymes.interfaces.IPronunciation;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
 public class Pronunciation implements IPronunciation {
 
     private List<IPhoneme> listOfPhoneme = new LinkedList<>();
@@ -39,12 +36,12 @@ public class Pronunciation implements IPronunciation {
             phoneme = listOfPhoneme.get(index);
             stressValue = phoneme.getStress();
 
-            if (finalStressedVowelIndex == -1 && isPhonemeAVowel(phoneme)){
-                finalStressedVowelIndex = index;
+            if (stressValue == 1){
+                return index;
             }
 
-            else if (stressValue == 1){
-                return index;
+            else if (finalStressedVowelIndex == -1 && isPhonemeAVowel(phoneme)){
+                finalStressedVowelIndex = index;
             }
 
             else if (isPhonemeAVowel(phoneme)){

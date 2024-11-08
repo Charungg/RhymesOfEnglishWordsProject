@@ -9,12 +9,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.util.LinkedList;
-
 import java.util.Set;
 import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 // Hashset if looped would return random data throughout the set
 // for example if pronunciation has been added phoneme in the order
@@ -33,11 +29,36 @@ import java.util.regex.Pattern;
 
 // The CMU Dict downloaded from the Github contains more word whereas the alternative link contains the non-updates CMU Dict
 // Therefore the JUnit testing
+
+// getRhyme worked for most test but that cat Junit test because
+// 10 words should rhyme with cat but it can't recognise it.
+// I code could only find 67/77 words that rhymed with cat
+
+// I temporarily added regex code to find the remaining 10 words that should rhyme with cat
+// by finding all words in the CMU with "K AE1 T$" and compare it to the my list of the rhymes it could find.
+
+// at-bat
+// balyeat
+// nonfat
+// gujarat
+// tit-for-tat
+// sarratt
+// rat-a-tat
+// non-fat
+// inmarsat
+// landsat
+// Turns out for at-bat after finding the vowel with stress 1 It didn't return it straight away.
+// Instead, it returned the second final stressed vowel.
+
+// Once all the jUnit code worked I worked on optimising the code to run faster
+// By changing the addWord function where it checks if the words exist with using .getWord() instead of
+// .contains because .containsValue() because .getWord has O(1) whereas .containsValue() has O(n)
+
+// Sub 1 second on my laptop and 600ms on my pc
+// While maintaining readability.
 public class Dictionary implements IDictionary {
 
     private Map<String,IWord> dictionary = new HashMap<>();
-
-    private Set<String> test = new HashSet<>();
 
     @Override
     public IWord getWord(String word) {
@@ -46,6 +67,8 @@ public class Dictionary implements IDictionary {
 
     @Override
     public void addWord(IWord word) {
+        // Alternatively You Could Use dictionary.containsValue(word) but .contains has A O(n)
+        // Whereas You Could Search For The wordString Which Has A O(1)
         if (dictionary.get(word.getWord()) != null){
             throw new IllegalArgumentException("This Word Already Exist Within The Dictionary");
         }
@@ -74,17 +97,13 @@ public class Dictionary implements IDictionary {
         String linePronunciation;
         int wordPronunciationIndexSplit;
 
-//        if (line == null){
-//            throw new IllegalArgumentException("Argument Passed Cannot Be Null");
-//        }
-
         line = removeComment(line);
         line = removeBracket(line);
 
         wordPronunciationIndexSplit = indexBetweenWordAndPronunciation(line);
         lineWord = setWordFromLine(line,wordPronunciationIndexSplit);
         linePronunciation = setPronunciationFromLine(line,wordPronunciationIndexSplit);
-        addWordAndPronunciation(lineWord, linePronunciation);
+        addWordsPronunciation(lineWord, linePronunciation);
     }
 
     public String removeComment(String line){
@@ -121,11 +140,9 @@ public class Dictionary implements IDictionary {
         return (line.substring(split + 1));
     }
 
-    public void addWordAndPronunciation(String lineWord, String linePronunciation) {
+    public void addWordsPronunciation(String lineWord, String linePronunciation) {
         IWord wordObject = getWord(lineWord);
-
-        // Breaks Down The Pronunciation Line Into A List Of Phoneme.
-        LinkedList<IPhoneme> listOfPhoneme = setUpListOfPronunciation(linePronunciation);
+        IPronunciation pronunciationObject;
 
         // If The Word Does Not Exist Within The Dictionary.
         if (wordObject == null) {
@@ -136,36 +153,23 @@ public class Dictionary implements IDictionary {
             // Get The New Word Object From Dictionary.
             wordObject = getWord(lineWord);
 
-            // List Of Phoneme Will Be Added To Pronunciation Object And Passed To The Word Object.
-            addingPhonemeToPronunciation(wordObject,listOfPhoneme);
         }
 
-        // Adds Pronunciation To Existing Word In The Dictionary.
-        else {
-            // List Of Phoneme Will Be Added To Pronunciation Object And Passed To The Word Object.
-            addingPhonemeToPronunciation(wordObject,listOfPhoneme);
-        }
-    }
-
-    public void addingPhonemeToPronunciation(IWord wordObject, LinkedList<IPhoneme> listOfPhoneme){
-        IPronunciation pronunciationObject = new Pronunciation();
-
-        for (IPhoneme currentPhoneme: listOfPhoneme){
-            pronunciationObject.add(currentPhoneme);
-        }
+        pronunciationObject = linePronunciationToObject(linePronunciation);
 
         wordObject.addPronunciation(pronunciationObject);
     }
 
 
-    public LinkedList<IPhoneme> setUpListOfPronunciation(String linePronunciation){
-        LinkedList<IPhoneme> listOfPhoneme = new LinkedList<>();
+
+    public IPronunciation linePronunciationToObject(String linePronunciation){
+        IPronunciation pronunciationObject = new Pronunciation();
 
         for (String phoneme: linePronunciation.split(" ")){
-            listOfPhoneme.add((createPhoneme(phoneme)));
+            pronunciationObject.add(createPhoneme(phoneme));
         }
 
-        return listOfPhoneme;
+        return pronunciationObject;
     }
 
     public Phoneme createPhoneme(String line){
@@ -178,32 +182,32 @@ public class Dictionary implements IDictionary {
         return (new Phoneme(arpabetValue,stressValue));
     }
 
-    public int getStressValue(String line){
+    public int getStressValue(String phoneme){
         int stressValue = -1;
 
         // Removes All Non-Numerical Characters From The String.
         // With The Stress Value Remaining As Long It Contains A Stress Value.
-        line = line.replaceAll("[a-z]|[A-Z]","");
+        phoneme = phoneme.replaceAll("[A-Z]","");
 
         // Turns String To An Integer If It Contains A Stress Value.
-        if (!line.isEmpty()){
-            stressValue = Integer.parseInt(line);
+        if (!phoneme.isEmpty()){
+            stressValue = Integer.parseInt(phoneme);
         }
 
         // Returns -1 As Stress Value If It Does Not Contain Stress.
         return stressValue;
     }
 
-    public Arpabet getArpabetValue(String line){
+    public Arpabet getArpabetValue(String phoneme){
         Arpabet arpabet;
 
         // Removes All Numerical Characters From The String.
-        line = line.replaceAll("[0-9]","");
+        phoneme = phoneme.replaceAll("[0-9]","");
 
         // Change String To A Arpabet Enum.
         // Throws An Exception If Enum Constant Does Not Exist
         // Meaning Given Argument Is Invalid.
-        arpabet = Arpabet.valueOf(line);
+        arpabet = Arpabet.valueOf(phoneme);
 
         return arpabet;
     }
@@ -214,10 +218,11 @@ public class Dictionary implements IDictionary {
         try{
             String line;
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            while ((line = reader.readLine()) != null){
-                regex(line);
+
+            while (((line = reader.readLine())) != null){
                 parseDictionaryLine(line);
             }
+
         }
 
         catch (IOException e) {
@@ -229,64 +234,36 @@ public class Dictionary implements IDictionary {
     public Set<String> getRhymes(String word) {
         IWord wordToRhyme = dictionary.get(word);
         Set<IPronunciation> wordToRhymePronunciationList = wordToRhyme.getPronunciations();
+        boolean isWordToRhymeFound;
 
         IWord dictionaryWord;
         Set<IPronunciation> dictionarySetOfPronunciation;
 
-        Set<String> rhymes = new HashSet<>();
+        HashSet<String> rhymes = new HashSet<>();
+
 
         for (String dictionaryString: dictionary.keySet()){
-//            System.out.println(dictionaryString);
             dictionaryWord = dictionary.get(dictionaryString);
             dictionarySetOfPronunciation = dictionaryWord.getPronunciations();
+            isWordToRhymeFound = false;
 
             for (IPronunciation dictionaryPronunciation : dictionarySetOfPronunciation){
+
                 for (IPronunciation pronunciation : wordToRhymePronunciationList){
                     if (pronunciation.rhymesWith(dictionaryPronunciation)){
+                        isWordToRhymeFound = true;
                         rhymes.add(dictionaryString);
+                        break;
                     }
                 }
-            }
-        }
 
-        if (word.equals("cat")){
-            for (String catRhyme : test){
-                if (!rhymes.contains(catRhyme)){
-                    System.out.println(catRhyme);
+                if (isWordToRhymeFound){
+                    break;
                 }
             }
         }
-
         return rhymes;
     }
 
-    public void regex(String line){
-        boolean matchFound;
-        int indexOfSpace;
-        int indexOfComment;
 
-        Pattern pattern = Pattern.compile("AE1 T$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(line);
-        matchFound = matcher.find();
-
-        if (matchFound){
-            indexOfSpace = line.indexOf(" ");
-
-            line = setWordFromLine(line,indexOfSpace);
-            line = removeBracket(line);
-            test.add(line);
-        }
-    }
 }
-
-// For cat 10 words should rhyme with but it can't recognise it.
-// at-bat
-// balyeat
-// nonfat
-// gujarat
-// tit-for-tat
-// sarratt
-// rat-a-tat
-// non-fat
-// inmarsat
-// landsat
