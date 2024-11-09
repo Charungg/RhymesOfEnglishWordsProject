@@ -10,6 +10,8 @@ import uk.ac.aber.cs21120.rhymes.interfaces.IPhoneme;
 // Minor problem with IllegalArgumentException requiring java.lang.Throwable.
 // An understanding wordings better such as Vowels and NonVowels valid stress values
 
+// Phoneme Class Which Creates Objects That Holds A Arpabet And Stress Value,
+// As A Pair They Articulate Speech Sounds.
 public class Phoneme implements IPhoneme{
 
     // Holds The Phoneme Enum Constant.
