@@ -56,6 +56,7 @@ import java.util.HashSet;
 
 // Sub 1 second on my laptop and 600ms on my pc
 // While maintaining readability.
+
 public class Dictionary implements IDictionary {
 
     private Map<String,IWord> dictionary = new HashMap<>();
@@ -159,8 +160,6 @@ public class Dictionary implements IDictionary {
 
         wordObject.addPronunciation(pronunciationObject);
     }
-
-
 
     public IPronunciation linePronunciationToObject(String linePronunciation){
         IPronunciation pronunciationObject = new Pronunciation();

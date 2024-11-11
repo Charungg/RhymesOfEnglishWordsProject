@@ -117,7 +117,7 @@ public class Pronunciation implements IPronunciation {
         otherPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
 
 
-        // Checks If The Araphabet Is The Same And If The Constant Are The Same.
+        // Checks If The Arpabet Is The Same And If The Constant Are The Same.
         return (phoneme.hasSameArpabet(otherPhoneme) && isSameConstant(indexFinalStressedVowel,otherIndexFinalStressedVowel,other.getPhonemes()));
     }
 
