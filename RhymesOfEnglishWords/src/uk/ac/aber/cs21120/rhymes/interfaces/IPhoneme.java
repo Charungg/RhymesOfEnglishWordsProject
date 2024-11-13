@@ -28,7 +28,6 @@ public interface IPhoneme {
     /**
      * Returns true if the ARPABET value is the same as in the other phoneme. Stress is ignored.
      * @return true if the ARPABET value is the same as in the other phoneme.
-     *
      * @throws IllegalArgumentException if the other phoneme is null.
      */
     boolean hasSameArpabet(IPhoneme other);
