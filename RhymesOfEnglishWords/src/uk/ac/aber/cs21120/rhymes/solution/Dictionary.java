@@ -381,7 +381,7 @@ public class Dictionary implements IDictionary {
 
         // All words from the dictionary that rhymes with the passed word
         // will be added to the rhymes HashMap.
-        HashSet<String> rhymes = new HashSet<>();
+        Set<String> rhymes = new HashSet<>();
 
         // Loops through each entity of the dictionary.
         for (Map.Entry<String,IWord> dictionary : dictionary.entrySet()){
