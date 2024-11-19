@@ -3,17 +3,11 @@
  *  as a pair they articulate speech sounds.
  */
 
-// Java Collections Framework Limitation
-// Only Use java.util, java.lang
-// Any resource you use must be acknowledged in the document
-
 package uk.ac.aber.cs21120.rhymes.solution;
 
 import uk.ac.aber.cs21120.rhymes.interfaces.Arpabet;
 import uk.ac.aber.cs21120.rhymes.interfaces.IPhoneme;
 
-// Minor problem with IllegalArgumentException requiring java.lang.Throwable.
-// An understanding wordings better such as Vowels and NonVowels valid stress values
 
 public class Phoneme implements IPhoneme{
 

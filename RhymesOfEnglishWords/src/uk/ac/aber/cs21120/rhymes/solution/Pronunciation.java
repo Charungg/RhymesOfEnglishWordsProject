@@ -12,13 +12,6 @@ import uk.ac.aber.cs21120.rhymes.interfaces.IPronunciation;
 import java.util.ArrayList;
 import java.util.List;
 
-// Upon completing all junit test I looked back to see what data structure I should use.
-// ArrayList Is Used Over LinkedList Both Have A Search Function Of O(n)
-// But As For Adding Elements ArrayList Has O(1) But Worse-Case O(n)
-// Whereas LinkedList Will Always Have O(n).
-// By Default ArrayList When Installed Has Capacity Of 10 Which Mostly More Than Enough.
-// ArrayList Is Better For Permanently Storing Data And Accessing Data
-
 public class Pronunciation implements IPronunciation {
 
     // Holds A ArrayList Of Phonemes Which Articulate Speeches Sounds Of A Word.
@@ -52,8 +45,6 @@ public class Pronunciation implements IPronunciation {
         return listOfPhoneme;
     }
 
-
-    // Returns The Index Of The Final Stressed Vowel Within The listOfPhoneme ArrayList.
 
     /**
      * Gets the final stressed vowel index from the listOfPhoneme.
@@ -98,8 +89,6 @@ public class Pronunciation implements IPronunciation {
     }
 
 
-    // Returns The Index With Highest Stress Value With Priority To finalIndex.
-
     /**
      * Compares two phoneme from the listOfPhoneme stress value.
      * @param finalIndex within the listOfPhoneme which is the current finals stressed vowel index.
@@ -109,8 +98,8 @@ public class Pronunciation implements IPronunciation {
     public int findHighestStressedValueIndex(int finalIndex, int index){
 
         // Gets The Stress Value From Both Indexes.
-        int finalStressValue = listOfPhoneme.get(finalIndex).getStress();
-        int stressValue = listOfPhoneme.get(index).getStress();
+        int finalStressValue = getStressValueFromIndex(finalIndex);
+        int stressValue = getStressValueFromIndex(index);
 
         // If The StressValue Is A Primary Stress OR StressValue
         // Is A Secondary Stress And finalStressValue Is 0.
@@ -123,7 +112,16 @@ public class Pronunciation implements IPronunciation {
         return finalIndex;
     }
 
-    // Returns True If The Passed Pronunciation Rhymes With The Current Pronunciation Object.
+
+    /**
+     * Get stress value from listOfPhoneme with passed index.
+     * @param index within the listOfPhoneme to get stress value.
+     * @return Phoneme stress value.
+     */
+    public int getStressValueFromIndex(int index){
+        return listOfPhoneme.get(index).getStress();
+    }
+
 
     /**
      * Checks if the current pronunciation rhymes with the other pronunciation.
@@ -151,16 +149,23 @@ public class Pronunciation implements IPronunciation {
         }
 
         // Gets Arpabet Of Both Phoneme Final Stressed Index;
-        phoneme = listOfPhoneme.get(indexFinalStressedVowel);
-        otherPhoneme = (other.getPhonemes()).get(other.findFinalStressedVowelIndex());
-
+        phoneme = getPhonemeFromIndex(indexFinalStressedVowel);
+        otherPhoneme = (other.getPhonemes()).get(otherIndexFinalStressedVowel);
 
         // Checks If The Arpabet Is The Same And If The Constant Are The Same.
         return (phoneme.hasSameArpabet(otherPhoneme) && isSoundsAfterFinalStressedVowelSame(indexFinalStressedVowel,otherIndexFinalStressedVowel,other.getPhonemes()));
     }
 
 
-    // Returns True If The Sounds After Final Stressed Vowel Are The Same.
+    /**
+     * Get Phoneme from listOfPhoneme with passed index.
+     * @param index within the listOfPhoneme to get Phoneme.
+     * @return Phoneme.
+     */
+    public IPhoneme getPhonemeFromIndex(int index){
+        return listOfPhoneme.get(index);
+    }
+
 
     /**
      * Checks if the sounds after both finals stressed vowels are the same.
