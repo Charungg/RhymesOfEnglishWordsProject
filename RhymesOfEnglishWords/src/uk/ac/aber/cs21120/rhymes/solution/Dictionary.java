@@ -19,19 +19,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
-
-// at-bat
-// balyeat
-// nonfat
-// gujarat
-// tit-for-tat
-// sarratt
-// rat-a-tat
-// non-fat
-// inmarsat
-// landsat
-
-
 public class Dictionary implements IDictionary {
 
     // Holds The Word String As The Key And The Word Object That Correspond To It

@@ -8,7 +8,6 @@ package uk.ac.aber.cs21120.rhymes.solution;
 import uk.ac.aber.cs21120.rhymes.interfaces.Arpabet;
 import uk.ac.aber.cs21120.rhymes.interfaces.IPhoneme;
 
-
 public class Phoneme implements IPhoneme{
 
     private Arpabet phoneme; // Holds the arpabet enum constant.
