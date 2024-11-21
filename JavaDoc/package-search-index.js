@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"uk.ac.aber.cs21120.rhymes.interfaces"},{"l":"uk.ac.aber.cs21120.rhymes.solution"},{"l":"uk.ac.aber.cs21120.rhymes.tests"}];updateSearchResults();
